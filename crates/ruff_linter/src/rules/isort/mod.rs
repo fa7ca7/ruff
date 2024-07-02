@@ -196,7 +196,7 @@ fn format_import_block(
             continue;
         };
 
-        let imports = order_imports(import_block, import_section, settings);
+        let mut imports = order_imports(import_block, import_section, settings);
 
         // Add a blank line between every section.
         if is_first_block {
@@ -205,6 +205,24 @@ fn format_import_block(
         } else if pending_lines_before {
             output.push_str(&stylist.line_ending());
             pending_lines_before = false;
+        }
+
+        // Add section heading before every section.
+        if settings.add_section_headings && !imports.is_empty() {
+            if let Some(section_heading) = settings.section_headings.get(import_section) {
+                let section_heading_comment = format!("# {section_heading}");
+                let first_import_comments = match &mut imports[0] {
+                    Import((_, comments)) => comments,
+                    ImportFrom((_, comments, _, _)) => comments,
+                };
+                if first_import_comments.atop.is_empty()
+                    || first_import_comments.atop[0] != section_heading_comment
+                {
+                    first_import_comments
+                        .atop
+                        .insert(0, section_heading_comment.into());
+                }
+            }
         }
 
         let mut line_insertion = None;

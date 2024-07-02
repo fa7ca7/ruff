@@ -74,7 +74,7 @@ pub struct Settings {
     pub length_sort: bool,
     pub length_sort_straight: bool,
     pub add_section_headings: bool,
-    pub section_headings: FxHashMap<String, String>,
+    pub section_headings: FxHashMap<ImportSection, String>,
 }
 
 impl Default for Settings {

@@ -2332,7 +2332,7 @@ pub struct IsortOptions {
     #[option(
         default = r#"false"#,
         value_type = "bool",
-        scope = "sections",
+        scope = "section-headings",
         example = r#"
             add-section-headings = true
         "#
@@ -2342,15 +2342,15 @@ pub struct IsortOptions {
     /// A list of mappings from section names to section headings.
     #[option(
         default = "{}",
-        value_type = "dict[str, str]",
-        scope = "sections",
+        value_type = r#"dict["future" | "standard-library" | "third-party" | "first-party" | "local-folder" | str, str]"#,
+        scope = "section-headings",
         example = r#"
             # Add headings to "testing" and "third-party" sections
             "testing" = "Testing utils"
             "third-party" = "Third Party packages"
         "#
     )]
-    pub section_headings: Option<FxHashMap<String, String>>,
+    pub section_headings: Option<FxHashMap<ImportSection, String>>,
 }
 
 impl IsortOptions {
@@ -2497,10 +2497,13 @@ impl IsortOptions {
             section_order.push(default_section.clone());
         }
 
-        // Verify that all sections listed in `section_headings` are defined in `sections`.
-        for section_name  in section_headings.keys() {
-            if !sections.contains_key(section_name) {
-                warn_user_once!("`section-headings` contains unknown section: `{:?}`", section_name,);
+        // Verify that all sections listed in `section_headings` are present in `section_order`.
+        for section in section_headings.keys() {
+            if !section_order.contains(section) {
+                warn_user_once!(
+                    "`section-headings` contains unknown section: `{:?}`",
+                    section,
+                );
             }
         }
 
