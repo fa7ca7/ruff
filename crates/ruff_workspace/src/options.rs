@@ -2327,6 +2327,30 @@ pub struct IsortOptions {
         "#
     )]
     pub sections: Option<FxHashMap<ImportSection, Vec<String>>>,
+
+    /// Add user defined headings before sections.
+    #[option(
+        default = r#"false"#,
+        value_type = "bool",
+        scope = "sections",
+        example = r#"
+            add-section-headings = true
+        "#
+    )]
+    pub add_section_headings: Option<bool>,
+
+    /// A list of mappings from section names to section headings.
+    #[option(
+        default = "{}",
+        value_type = "dict[str, str]",
+        scope = "sections",
+        example = r#"
+            # Add headings to "testing" and "third-party" sections
+            "testing" = "Testing utils"
+            "third-party" = "Third Party packages"
+        "#
+    )]
+    pub section_headings: Option<FxHashMap<String, String>>,
 }
 
 impl IsortOptions {
@@ -2407,6 +2431,8 @@ impl IsortOptions {
         let no_lines_before = self.no_lines_before.unwrap_or_default();
         let from_first = self.from_first.unwrap_or_default();
         let sections = self.sections.unwrap_or_default();
+        let add_section_headings = self.add_section_headings.unwrap_or_default();
+        let section_headings = self.section_headings.unwrap_or_default();
 
         // Verify that `sections` doesn't contain any built-in sections.
         let sections: FxHashMap<String, Vec<glob::Pattern>> = sections
@@ -2471,6 +2497,13 @@ impl IsortOptions {
             section_order.push(default_section.clone());
         }
 
+        // Verify that all sections listed in `section_headings` are defined in `sections`.
+        for section_name  in section_headings.keys() {
+            if !sections.contains_key(section_name) {
+                warn_user_once!("`section-headings` contains unknown section: `{:?}`", section_name,);
+            }
+        }
+
         Ok(isort::settings::Settings {
             required_imports: self
                 .required_imports
@@ -2511,6 +2544,8 @@ impl IsortOptions {
             from_first,
             length_sort: self.length_sort.unwrap_or(false),
             length_sort_straight: self.length_sort_straight.unwrap_or(false),
+            add_section_headings,
+            section_headings,
         })
     }
 }

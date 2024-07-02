@@ -5,7 +5,7 @@ use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
-use rustc_hash::FxHashSet;
+use rustc_hash::{FxHashMap, FxHashSet};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
@@ -73,6 +73,8 @@ pub struct Settings {
     pub from_first: bool,
     pub length_sort: bool,
     pub length_sort_straight: bool,
+    pub add_section_headings: bool,
+    pub section_headings: FxHashMap<String, String>,
 }
 
 impl Default for Settings {
@@ -104,6 +106,8 @@ impl Default for Settings {
             from_first: false,
             length_sort: false,
             length_sort_straight: false,
+            add_section_headings: false,
+            section_headings: FxHashMap::default(),
         }
     }
 }
@@ -139,7 +143,9 @@ impl Display for Settings {
                 self.no_sections,
                 self.from_first,
                 self.length_sort,
-                self.length_sort_straight
+                self.length_sort_straight,
+                self.add_section_headings,
+                self.section_headings | map,
             ]
         }
         Ok(())
@@ -154,6 +160,7 @@ pub enum SettingsError {
     InvalidKnownLocalFolder(glob::PatternError),
     InvalidExtraStandardLibrary(glob::PatternError),
     InvalidUserDefinedSection(glob::PatternError),
+    InvalidUserDefinedSectionHeading(glob::PatternError),
 }
 
 impl Display for SettingsError {
@@ -174,6 +181,9 @@ impl Display for SettingsError {
             SettingsError::InvalidUserDefinedSection(err) => {
                 write!(f, "invalid user-defined section pattern: {err}")
             }
+            SettingsError::InvalidUserDefinedSectionHeading(err) => {
+                write!(f, "invalid user-defined section heading pattern: {err}")
+            }
         }
     }
 }
@@ -186,6 +196,7 @@ impl Error for SettingsError {
             SettingsError::InvalidKnownLocalFolder(err) => Some(err),
             SettingsError::InvalidExtraStandardLibrary(err) => Some(err),
             SettingsError::InvalidUserDefinedSection(err) => Some(err),
+            SettingsError::InvalidUserDefinedSectionHeading(err) => Some(err),
         }
     }
 }
