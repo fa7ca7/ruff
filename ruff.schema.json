@@ -1568,13 +1568,6 @@
     "IsortOptions": {
       "type": "object",
       "properties": {
-        "add-section-headings": {
-          "description": "Add user defined headings before sections.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
         "case-sensitive": {
           "description": "Sort imports taking into account case sensitivity.",
           "type": [

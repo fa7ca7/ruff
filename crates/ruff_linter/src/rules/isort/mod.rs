@@ -212,15 +212,13 @@ fn format_import_block(
             if let Some(section_heading) = settings.section_headings.get(import_section) {
                 let section_heading_comment = format!("# {section_heading}");
                 let first_import_comments = match &mut imports[0] {
-                    Import((_, comments)) => comments,
-                    ImportFrom((_, comments, _, _)) => comments,
+                    Import((_, comments)) => &mut comments.atop,
+                    ImportFrom((_, comments, _, _)) => &mut comments.atop,
                 };
-                if first_import_comments.atop.is_empty()
-                    || first_import_comments.atop[0] != section_heading_comment
+                if first_import_comments.is_empty()
+                    || first_import_comments[0] != section_heading_comment
                 {
-                    first_import_comments
-                        .atop
-                        .insert(0, section_heading_comment.into());
+                    first_import_comments.insert(0, section_heading_comment.into());
                 }
             }
         }
