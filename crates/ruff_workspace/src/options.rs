@@ -2328,17 +2328,6 @@ pub struct IsortOptions {
     )]
     pub sections: Option<FxHashMap<ImportSection, Vec<String>>>,
 
-    /// Add user defined headings before sections.
-    #[option(
-        default = r#"false"#,
-        value_type = "bool",
-        scope = "section-headings",
-        example = r#"
-            add-section-headings = true
-        "#
-    )]
-    pub add_section_headings: Option<bool>,
-
     /// A list of mappings from section names to section headings.
     #[option(
         default = "{}",
@@ -2431,7 +2420,6 @@ impl IsortOptions {
         let no_lines_before = self.no_lines_before.unwrap_or_default();
         let from_first = self.from_first.unwrap_or_default();
         let sections = self.sections.unwrap_or_default();
-        let add_section_headings = self.add_section_headings.unwrap_or_default();
         let section_headings = self.section_headings.unwrap_or_default();
 
         // Verify that `sections` doesn't contain any built-in sections.
@@ -2547,7 +2535,6 @@ impl IsortOptions {
             from_first,
             length_sort: self.length_sort.unwrap_or(false),
             length_sort_straight: self.length_sort_straight.unwrap_or(false),
-            add_section_headings,
             section_headings,
         })
     }

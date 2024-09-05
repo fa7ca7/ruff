@@ -208,7 +208,7 @@ fn format_import_block(
         }
 
         // Add section heading before every section.
-        if settings.add_section_headings && !imports.is_empty() {
+        if !imports.is_empty() {
             if let Some(section_heading) = settings.section_headings.get(import_section) {
                 let section_heading_comment = format!("# {section_heading}");
                 let first_import_comments = match &mut imports[0] {

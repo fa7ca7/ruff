@@ -73,7 +73,6 @@ pub struct Settings {
     pub from_first: bool,
     pub length_sort: bool,
     pub length_sort_straight: bool,
-    pub add_section_headings: bool,
     pub section_headings: FxHashMap<ImportSection, String>,
 }
 
@@ -106,7 +105,6 @@ impl Default for Settings {
             from_first: false,
             length_sort: false,
             length_sort_straight: false,
-            add_section_headings: false,
             section_headings: FxHashMap::default(),
         }
     }
@@ -144,7 +142,6 @@ impl Display for Settings {
                 self.from_first,
                 self.length_sort,
                 self.length_sort_straight,
-                self.add_section_headings,
                 self.section_headings | map,
             ]
         }
